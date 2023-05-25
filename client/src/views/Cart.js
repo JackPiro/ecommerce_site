@@ -8,6 +8,10 @@ const Cart = (props) => {
   const showCart = () => {
     setCartShow(false);
   }
+  
+  const showItemsInCart = () => {
+    axios.get('http://localhost:8000/api/' + cartId)
+  }
 
   const deleteFromCart = (cartId) => {
     axios.delete('http://localhost:8000/api/' + cartId)
@@ -19,6 +23,7 @@ const Cart = (props) => {
         console.log(err);
       });
   }
+
   return (
       <div className="fixed z-50 top-0 right-0 h-screen w-96 shadow-xl bg-neutral-300 border border-solid border-l-black overflow-auto">
         <div className="h-28 text-slate-700 font-semibold px-3 flex">
