@@ -2,8 +2,9 @@ import { React, useEffect, useState } from 'react';
 import ItemCard from '../components/ItemCard';
 import axios from 'axios';
 
-const Home = () => {
+const Home = (props) => {
     const [productList, setProductList] = useState([]);
+    const {cartList, setCartList} = props;
 
     useEffect(() => {
         axios.get('https://fakestoreapi.com/products')
@@ -16,13 +17,13 @@ const Home = () => {
 
 
     return (
-        <div className='p-6 justify-center'>
+        <div className='p-6 justify-center w-screen px-32 pt-16'>
             <div className='p-6 grid grid-cols-4'>
                 {
                     productList.map((item) => {
                         return (
                             <div className='p-10'>
-                                <ItemCard key={item._id} item={item} />
+                                <ItemCard key={item._id} item={item}/>
                             </div>
                         )
                     })
