@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -7,6 +7,8 @@ const ItemCard = ({ item }) => {
     const [quantity, setQuantity] = useState(0);
     const [cart, setCart] = useState({});
     const [total, setTotal] = useState(0);
+    const [itemsInCart, setItemsInCart] = useState([]);
+    const [showMessage, setShowMessage] = useState(false);
 
     if (!item) {
         return (
@@ -14,21 +16,50 @@ const ItemCard = ({ item }) => {
         );
     };
 
-    const handleCartCreate = (e) => {
-      e.preventDefault();
-        axios.post('http://localhost:8000/api/cart', {productId: item.id, quantity: quantity})
-            .then((res) => {
-                console.log(res.data);
-                setCart(res.data);
-            });
+    const confirmation = () => {
+        setShowMessage(true);
+        setTimeout(() => {
+            setShowMessage(false);
+        }, 3000);
+    }
+    
+    const handleCartCreateAndAdd = (e) => {
+        e.preventDefault();
+        axios.post('http://localhost:8000/api/cart', {
+            product: {
+                productId: item._id,
+                productTitle: item.title,
+                productPrice: item.price
+            },
+            quantity: quantity
+        })
+        .then((res) => {
+            console.log(res.data);
+            setCart(res.data);
+            setItemsInCart([...itemsInCart, item])
+            confirmation();
+        });
         console.log(cart);
     };
-
+    
     const handleCartAdd = () => {
-        axios.put('http://localhost:8000/api/' + cart._id, { productId: item.id, quantity: quantity })
-            .then(res => console.log(res.data))
-            .catch(err => console.log(err));
-        console.log(cart);
+        if (cart._id) {
+            axios.put('http://localhost:8000/api/' + cart._id, {
+                product: {
+                    productId: item._id,
+                    productTitle: item.title,
+                    productPrice: item.price
+                },
+                quantity: quantity
+            })
+                .then((res) => {
+                    console.log(res.data)
+                    setItemsInCart([...itemsInCart, item])
+                    confirmation();
+                })
+                .catch(err => console.log(err));
+            console.log(cart);
+        }
     }
 
     const addOne = () => {
@@ -43,17 +74,13 @@ const ItemCard = ({ item }) => {
         };
     };
 
-    const checkCreateCart = (e) => {
-
-    }
-
     return (
         <div className='p-5 m-5 h-full w-52 rounded-lg border-solid border bg-slate-100 shadow-lg'>
             <div className='group relative'>
                 {/* <img className='block rounded-lg transition duration-300 shadow-xl object-cover ' src={item.image}/> */}
                 <img className='block w-full md:w-72 h-44 rounded-lg transition duration-300 shadow-xl object-cover' src={item.image} alt=""/>
                 <div className='rounded-lg absolute inset-0 flex items-center justify-center bg-black opacity-0 transition duration-300 group-hover:opacity-40 w-full h-full'>
-                    <Link onClick={handleCartCreate} className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
+                    <Link onClick={ itemsInCart.length === 0 ? handleCartCreateAndAdd : handleCartAdd } className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
                 </div>
             </div>
             <div className='justify-between'>
@@ -71,6 +98,11 @@ const ItemCard = ({ item }) => {
                                 Total: ${total}
                             </p>
                         : ''
+                    }
+                </div>
+                <div>
+                    {
+                        showMessage === true ? <p className='fade-out text-xs text-blue-400' > item added to cart</p> : ''
                     }
                 </div>
             </div>

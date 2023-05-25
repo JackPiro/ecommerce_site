@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from 'react';
-import ItemCard from '../components/ItemCard';
 import axios from 'axios';
+import ItemCard from '../components/ItemCard';
+import Navbar from '../components/Navbar';
 
 const Home = (props) => {
     const [productList, setProductList] = useState([]);
