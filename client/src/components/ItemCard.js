@@ -14,18 +14,21 @@ const ItemCard = ({ item }) => {
         );
     };
 
-    const handleCartCreate = () => {
-        axios.post('http://localhost:8000/api/cart')
+    const handleCartCreate = (e) => {
+      e.preventDefault();
+        axios.post('http://localhost:8000/api/cart', {productId: item.id, quantity: quantity})
             .then((res) => {
                 console.log(res.data);
                 setCart(res.data);
             });
+        console.log(cart);
     };
 
     const handleCartAdd = () => {
-        axios.post('http://localhost:8000/api/' + cart._id, { productId: item.id, quantity: quantity })
+        axios.put('http://localhost:8000/api/' + cart._id, { productId: item.id, quantity: quantity })
             .then(res => console.log(res.data))
             .catch(err => console.log(err));
+        console.log(cart);
     }
 
     const addOne = () => {
@@ -40,17 +43,17 @@ const ItemCard = ({ item }) => {
         };
     };
 
-    const checkCreateCart = () => {
+    const checkCreateCart = (e) => {
 
     }
 
     return (
-        <div className='p-5 m-5 h-full w-52 rounded-lg bg-slate-300'>
+        <div className='p-5 m-5 h-full w-52 rounded-lg border-solid border bg-slate-100 shadow-lg'>
             <div className='group relative'>
                 {/* <img className='block rounded-lg transition duration-300 shadow-xl object-cover ' src={item.image}/> */}
-                <img className='block w-full md:w-72 h-44 rounded-lg transition duration-300 shadow-xl object-cover' src={item.image}/>
+                <img className='block w-full md:w-72 h-44 rounded-lg transition duration-300 shadow-xl object-cover' src={item.image} alt=""/>
                 <div className='rounded-lg absolute inset-0 flex items-center justify-center bg-black opacity-0 transition duration-300 group-hover:opacity-40 w-full h-full'>
-                    <Link onClick={checkCreateCart} className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
+                    <Link onClick={handleCartCreate} className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
                 </div>
             </div>
             <div className='justify-between'>
@@ -65,7 +68,7 @@ const ItemCard = ({ item }) => {
                     {
                         total > 0 ? 
                             <p>
-                                Total: {total}
+                                Total: ${total}
                             </p>
                         : ''
                     }
