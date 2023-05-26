@@ -6,25 +6,19 @@ module.exports.findAllCarts = (req,res) => {
       console.log(allCarts);
       res.json({carts : allCarts});
     })
-    .catch((err) => {
-      res.json({ message: 'Something went wrong', error: err })
-  });
+    .catch((err) => res.status(400).json(err));
 }
 
 module.exports.findCart = (req, res) => {
   Cart.findOne({_id:req.params.id})
     .then(cart => {res.json(cart)})
-    .catch((err) => {
-        res.json({ message: 'Something went wrong', error: err })
-    });
+    .catch((err) => res.status(400).json(err));
 }
 
 module.exports.createCart = (req, res) => {
   Cart.create(req.body)
     .then(cart => res.json(cart))
-    .catch((err) => {
-      res.json({ message: 'Something went wrong', error: err })
-  });
+    .catch((err) => res.status(400).json(err));
 }
 
 module.exports.updateCart = (req, res) => {
@@ -33,15 +27,11 @@ module.exports.updateCart = (req, res) => {
       console.log(cart);
       res.json(cart);
     })
-    .catch((err) => {
-      res.json({ message: 'Something went wrong', error: err })
-  });
+    .catch((err) => res.status(400).json(err));
 }
 
 module.exports.deleteCart = (req, res) => {
   Cart.deleteOne({_id: req.params.id})
     .then(cart => res.json(cart))
-    .catch((err) => {
-      res.json({ message: 'Something went wrong', error: err })
-  });
+    .catch((err) => res.status(400).json(err));
 }

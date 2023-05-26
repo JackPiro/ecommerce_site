@@ -3,10 +3,12 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 
-const ItemCard = ({ item }) => {
+const ItemCard = ({ item }, props) => {
     const [quantity, setQuantity] = useState(0);
     const [cart, setCart] = useState({});
     const [total, setTotal] = useState(0);
+    const [errors, setErrors] = useState([]);
+    const {cartList, setCartList} = props;
 
     if (!item) {
         return (
@@ -14,20 +16,24 @@ const ItemCard = ({ item }) => {
         );
     };
 
-    const handleCartCreate = (e) => {
-      e.preventDefault();
-        axios.post('http://localhost:8000/api/cart', {productId: item.id, quantity: quantity})
+    const handleCartCreate = () => {
+        axios.post('http://localhost:8000/api/cart', {productId: item.id, productName: item.title, productPrice: item.price, quantity: quantity})
             .then((res) => {
                 console.log(res.data);
                 setCart(res.data);
-            });
-        console.log(cart);
+                setCartList([...cartList, res.data]);
+            })
+            .catch(err=>{
+              if(err.response === undefined) {
+                return null;
+              } else {
+              setErrors(err.response.data.errors)}});
     };
 
-    const handleCartAdd = () => {
-        axios.put('http://localhost:8000/api/' + cart._id, { productId: item.id, quantity: quantity })
+    const handleCartEdit = () => {
+        axios.put('http://localhost:8000/api/' + cart._id, {productId: item.id, productName: item.title, productPrice: item.price, quantity: quantity})
             .then(res => console.log(res.data))
-            .catch(err => console.log(err));
+            .catch(err=>{setErrors(err.res.data.errors)});
         console.log(cart);
     }
 
@@ -72,6 +78,9 @@ const ItemCard = ({ item }) => {
                             </p>
                         : ''
                     }
+                    { errors.quantity ?
+                    <p className="text-red-700 font-semibold">{errors.quantity.message}</p>
+                    : null}
                 </div>
             </div>
         </div>
