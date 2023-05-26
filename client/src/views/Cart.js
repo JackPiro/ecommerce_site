@@ -10,6 +10,10 @@ const Cart = (props) => {
   const showCart = () => {
     setCartShow(false);
   }
+  
+  const showItemsInCart = () => {
+    axios.get('http://localhost:8000/api/' + cartId)
+  }
 
   const deleteFromCart = (cartId) => {
     axios.delete('http://localhost:8000/api/' + cartId)
@@ -21,7 +25,6 @@ const Cart = (props) => {
         console.log(err);
       });
   }
-
   const addOne = () => {
     setQuantity(quantity + 1);
 };

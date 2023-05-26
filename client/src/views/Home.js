@@ -1,8 +1,10 @@
 import { React, useEffect, useState } from 'react';
-import ItemCard from '../components/ItemCard';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Cart from './Cart';
+
+import ItemCard from '../components/ItemCard';
+
 
 const Home = () => {
     const [productList, setProductList] = useState([]);
