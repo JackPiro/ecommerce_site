@@ -3,11 +3,12 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 
-const ItemCard = ({ item }) => {
+const ItemCard = ({ item }, props) => {
     const [quantity, setQuantity] = useState(0);
     const [cart, setCart] = useState({});
     const [total, setTotal] = useState(0);
-    const [itemsInCart, setItemsInCart] = useState([]);
+    const [errors, setErrors] = useState([]);
+    const {cartList, setCartList} = props;
     const [showMessage, setShowMessage] = useState(false);
 
     if (!item) {
@@ -16,50 +17,31 @@ const ItemCard = ({ item }) => {
         );
     };
 
+    const handleCartCreate = () => {
+        axios.post('http://localhost:8000/api/cart', {productId: item.id, productName: item.title, productPrice: item.price, quantity: quantity})
+            .then((res) => {
+                console.log(res.data);
+                setCart(res.data);
+                setCartList([...cartList, res.data]);
+            })
+            .catch(err=>{
+              if(err.response === undefined) {
+                return null;
+              } else {
+              setErrors(err.response.data.errors)}});
+    };
+
+    const handleCartEdit = () => {
+        axios.put('http://localhost:8000/api/' + cart._id, {productId: item.id, productName: item.title, productPrice: item.price, quantity: quantity})
+            .then(res => console.log(res.data))
+            .catch(err=>{setErrors(err.res.data.errors)});
+        console.log(cart);
+    }
     const confirmation = () => {
         setShowMessage(true);
         setTimeout(() => {
             setShowMessage(false);
         }, 3000);
-    }
-    
-    const handleCartCreateAndAdd = (e) => {
-        e.preventDefault();
-        axios.post('http://localhost:8000/api/cart', {
-            product: {
-                productId: item._id,
-                productTitle: item.title,
-                productPrice: item.price
-            },
-            quantity: quantity
-        })
-        .then((res) => {
-            console.log(res.data);
-            setCart(res.data);
-            setItemsInCart([...itemsInCart, item])
-            confirmation();
-        });
-        console.log(cart);
-    };
-    
-    const handleCartAdd = () => {
-        if (cart._id) {
-            axios.put('http://localhost:8000/api/' + cart._id, {
-                product: {
-                    productId: item._id,
-                    productTitle: item.title,
-                    productPrice: item.price
-                },
-                quantity: quantity
-            })
-                .then((res) => {
-                    console.log(res.data)
-                    setItemsInCart([...itemsInCart, item])
-                    confirmation();
-                })
-                .catch(err => console.log(err));
-            console.log(cart);
-        }
     }
 
     const addOne = () => {
@@ -99,6 +81,9 @@ const ItemCard = ({ item }) => {
                             </p>
                         : ''
                     }
+                    { errors.quantity ?
+                    <p className="text-red-700 font-semibold">{errors.quantity.message}</p>
+                    : null}
                 </div>
                 <div>
                     {
