@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom'
 const Cart = (props) => {
   const {cartList, setCartList} = props;
   const {cartShow, setCartShow} = props;
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   const showCart = () => {
     setCartShow(false);
@@ -13,6 +13,15 @@ const Cart = (props) => {
   
   const showItemsInCart = () => {
     axios.get('http://localhost:8000/api/' + cartId)
+  }
+
+  const handleCartEdit = (cart) => {
+    axios.put('http://localhost:8000/api/' + cart._id, {productId: cart.productId, productName: cart.productName, productPrice: cart.productPrice, quantity: quantity})
+      .then(res => {
+        console.log(res.data)
+        window.location.reload();
+      })
+      .catch(err=>{console.log(err)});
   }
 
   const deleteFromCart = (cartId) => {
@@ -30,7 +39,7 @@ const Cart = (props) => {
 };
 
 const subtractOne = () => {
-    if (quantity > 0) {
+    if (quantity > 1) {
         setQuantity(quantity - 1);
     };
 };
@@ -53,7 +62,7 @@ const subtractOne = () => {
                     <button onClick={subtractOne} className="px-2 -py-3 bg-slate-400 text-white rounded-md hover:opacity-60">-</button>
                         <span className="mx-4 text-xs font-bold">{quantity}</span>
                     <button onClick={addOne} className="px-2 -py-3 bg-slate-400 text-white rounded-md hover:opacity-60">+</button>
-                    <Link className='ml-3 btn btn-blue'>Edit Quantity</Link>
+                    <Link onClick={() => handleCartEdit(cart)} className='ml-3 btn btn-blue'>Edit Quantity</Link>
                 </div>
                 </div>
               })
