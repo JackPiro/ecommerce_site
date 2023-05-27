@@ -9,6 +9,7 @@ const ItemCard = (props) => {
     const [total, setTotal] = useState(0);
     const [errors, setErrors] = useState([]);
     const {cartList, setCartList, item} = props;
+    const [showMessage, setShowMessage] = useState(false);
 
     if (!item) {
         return (
@@ -28,14 +29,12 @@ const ItemCard = (props) => {
               } else {
               setErrors(err.response.data.errors)}});
     };
-
-    /* const handleCartEdit = (id,total) => {
-        axios.put('http://localhost:8000/api/' + id, {productId: item.id, productName: item.title, productPrice: item.price, quantity: total})
-            .then(res => {
-              console.log(res.data);
-              setCartList([...cartList, cart])})
-            .catch(err=>{setErrors(err.res.data.errors)});
-    } */
+    const confirmation = () => {
+        setShowMessage(true);
+        setTimeout(() => {
+            setShowMessage(false);
+        }, 3000);
+    }
 
     const addOne = () => {
         setQuantity(quantity + 1);
@@ -48,27 +47,6 @@ const ItemCard = (props) => {
             setTotal((quantity - 1) * item.price)
         };
     };
-
-    /* const checkCreateCart = () => {
-      if(cartList === []) {
-        console.log(cartList);
-        return handleCartCreate();
-      }
-      else{
-        for(let i=0; i<cartList.length; i++) {
-          let total = 0;
-          if(cartList[i].productId === item.id) {
-            total = quantity + cartList[i].quanity;
-            let id = cartList[i]._id;
-            return handleCartEdit(id,total);
-          }
-          else {
-            return handleCartCreate();
-          }
-        }
-      }
-    } */
-
     return (
         <div className='p-5 m-5 h-full w-52 rounded-lg border-solid border bg-slate-100 shadow-lg'>
             <div className='group relative'>
@@ -76,6 +54,7 @@ const ItemCard = (props) => {
                 <img className='block w-full md:w-72 h-44 rounded-lg transition duration-300 shadow-xl object-cover' src={item.image} alt=""/>
                 <div className='rounded-lg absolute inset-0 flex items-center justify-center bg-black opacity-0 transition duration-300 group-hover:opacity-40 w-full h-full'>
                     <Link onClick={handleCartCreate} className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
+
                 </div>
             </div>
             <div className='justify-between'>
@@ -97,6 +76,11 @@ const ItemCard = (props) => {
                     { errors.quantity ?
                     <p className="text-red-700 font-semibold">{errors.quantity.message}</p>
                     : null}
+                </div>
+                <div>
+                    {
+                        showMessage === true ? <p className='fade-out text-xs text-blue-400' > item added to cart</p> : ''
+                    }
                 </div>
             </div>
         </div>
