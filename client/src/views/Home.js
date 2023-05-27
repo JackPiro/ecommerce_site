@@ -42,7 +42,7 @@ const Home = () => {
                     productList.map((item) => {
                         return (
                             <div className='p-10'>
-                                <ItemCard key={item._id} item={item} cartList={cartList} setCartList={setCartList}/>
+                                <ItemCard item={item} cartList={cartList} setCartList={setCartList}/>
                             </div>
                         )
                     })
