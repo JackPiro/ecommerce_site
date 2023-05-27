@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState} from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ const ItemCard = (props) => {
         axios.post('http://localhost:8000/api/cart', {productId: item.id, productName: item.title, productPrice: item.price, quantity: quantity})
             .then((res) => {
                 setCart(res.data);
-                setCartList([...cartList, cart]);
+                setCartList([...cartList, res.data]);
             })
             .catch(err=>{
               if(err.response === undefined) {
@@ -29,13 +29,13 @@ const ItemCard = (props) => {
               setErrors(err.response.data.errors)}});
     };
 
-    const handleCartEdit = (id,total) => {
+    /* const handleCartEdit = (id,total) => {
         axios.put('http://localhost:8000/api/' + id, {productId: item.id, productName: item.title, productPrice: item.price, quantity: total})
             .then(res => {
               console.log(res.data);
               setCartList([...cartList, cart])})
             .catch(err=>{setErrors(err.res.data.errors)});
-    }
+    } */
 
     const addOne = () => {
         setQuantity(quantity + 1);
@@ -49,7 +49,7 @@ const ItemCard = (props) => {
         };
     };
 
-    const checkCreateCart = () => {
+    /* const checkCreateCart = () => {
       if(cartList === []) {
         console.log(cartList);
         return handleCartCreate();
@@ -67,7 +67,7 @@ const ItemCard = (props) => {
           }
         }
       }
-    }
+    } */
 
     return (
         <div className='p-5 m-5 h-full w-52 rounded-lg border-solid border bg-slate-100 shadow-lg'>
@@ -75,7 +75,7 @@ const ItemCard = (props) => {
                 {/* <img className='block rounded-lg transition duration-300 shadow-xl object-cover ' src={item.image}/> */}
                 <img className='block w-full md:w-72 h-44 rounded-lg transition duration-300 shadow-xl object-cover' src={item.image} alt=""/>
                 <div className='rounded-lg absolute inset-0 flex items-center justify-center bg-black opacity-0 transition duration-300 group-hover:opacity-40 w-full h-full'>
-                    <Link onClick={checkCreateCart} className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
+                    <Link onClick={handleCartCreate} className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
                 </div>
             </div>
             <div className='justify-between'>
