@@ -3,12 +3,12 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 
-const ItemCard = ({ item }, props) => {
+const ItemCard = (props) => {
     const [quantity, setQuantity] = useState(0);
     const [cart, setCart] = useState({});
     const [total, setTotal] = useState(0);
     const [errors, setErrors] = useState([]);
-    const {cartList, setCartList} = props;
+    const {cartList, setCartList, item} = props;
     const [showMessage, setShowMessage] = useState(false);
 
     if (!item) {
@@ -20,9 +20,8 @@ const ItemCard = ({ item }, props) => {
     const handleCartCreate = () => {
         axios.post('http://localhost:8000/api/cart', {productId: item.id, productName: item.title, productPrice: item.price, quantity: quantity})
             .then((res) => {
-                console.log(res.data);
                 setCart(res.data);
-                setCartList([...cartList, res.data]);
+                setCartList([...cartList, cart]);
             })
             .catch(err=>{
               if(err.response === undefined) {
@@ -31,11 +30,12 @@ const ItemCard = ({ item }, props) => {
               setErrors(err.response.data.errors)}});
     };
 
-    const handleCartEdit = () => {
-        axios.put('http://localhost:8000/api/' + cart._id, {productId: item.id, productName: item.title, productPrice: item.price, quantity: quantity})
-            .then(res => console.log(res.data))
+    const handleCartEdit = (id,total) => {
+        axios.put('http://localhost:8000/api/' + id, {productId: item.id, productName: item.title, productPrice: item.price, quantity: total})
+            .then(res => {
+              console.log(res.data);
+              setCartList([...cartList, cart])})
             .catch(err=>{setErrors(err.res.data.errors)});
-        console.log(cart);
     }
     const confirmation = () => {
         setShowMessage(true);
@@ -55,6 +55,25 @@ const ItemCard = ({ item }, props) => {
             setTotal((quantity - 1) * item.price)
         };
     };
+    const checkCreateCart = () => {
+      if(cartList === []) {
+        console.log(cartList);
+        return handleCartCreate();
+      }
+      else{
+        for(let i=0; i<cartList.length; i++) {
+          let total = 0;
+          if(cartList[i].productId === item.id) {
+            total = quantity + cartList[i].quanity;
+            let id = cartList[i]._id;
+            return handleCartEdit(id,total);
+          }
+          else {
+            return handleCartCreate();
+          }
+        }
+      }
+    }
 
     return (
         <div className='p-5 m-5 h-full w-52 rounded-lg border-solid border bg-slate-100 shadow-lg'>
@@ -62,7 +81,8 @@ const ItemCard = ({ item }, props) => {
                 {/* <img className='block rounded-lg transition duration-300 shadow-xl object-cover ' src={item.image}/> */}
                 <img className='block w-full md:w-72 h-44 rounded-lg transition duration-300 shadow-xl object-cover' src={item.image} alt=""/>
                 <div className='rounded-lg absolute inset-0 flex items-center justify-center bg-black opacity-0 transition duration-300 group-hover:opacity-40 w-full h-full'>
-                    <Link onClick={ itemsInCart.length === 0 ? handleCartCreateAndAdd : handleCartAdd } className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
+                    <Link onClick={checkCreateCart} className='opacity-0 group-hover:opacity-100 text-white font-bold py-2 px-4 rounded hover:text-blue-400 transition'>Add to Cart</Link>
+
                 </div>
             </div>
             <div className='justify-between'>
